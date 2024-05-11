@@ -12,32 +12,38 @@ def read_RAM(file_name: any, word: Union[list, int]) -> dict:
 
     """
 
-    lenth_word = len(word)
+    length_word = len(word)
     program = {}
-    lin = {}
-    inp = {0: lenth_word}
-    reg = {}
-    out = {0: 0}
-    stp = 0
+    lin = {}  # dictionnaire pour les lignes
+    inp = {0: length_word}  # dictionnaire pour les entrées
+    reg = {}  # dictionnaire pour les registres
+    out = {0: 0}  # dictionnaire pour les sorties
+    stp = 0  # variable pour l'étape en cours
 
     with open(file_name, 'r') as file:
         lines = file.readlines()
-        lenth_read = len(lines)
-        for idx in range(lenth_read):
+        length_read = len(lines)
+        for idx in range(length_read):
+            # sépare les éléments de la ligne
             elements = lines[idx].strip().split()
-            operation = elements[0][:-2]  # prend la ligne sans '\n'
-            lin.update({idx: operation})
 
-    for idx in range(1, lenth_word + 1):
+            # prend la ligne sans '\n'
+            operation = elements[0][:-2]
+
+            # ajoute la ligne en cours au dictionnaire des lignes
+            lin.update({idx: operation})
+    for idx in range(1, length_word + 1):
+        # ajoute les entrées au dictionnaire des entrées
         inp.update({idx: word[idx-1]})
 
+    # ajout des lignes, entrées, registres, sorties et étapes au programme
     program["l"] = lin
     program["i"] = inp
     program["r"] = reg
     program["o"] = out
     program["s"] = stp
 
-# Affichage formaté de la clé "l"
+# affiche les éléments de la machine RAM
     print("Initialization of RAM \n")
     for key, value in lin.items():
         if key == program["s"]:
@@ -55,18 +61,21 @@ def read_RAM(file_name: any, word: Union[list, int]) -> dict:
 def execution(machine: dict):
 
     """
-    Executes the commands of the RAM machine.
+    Execute les commandes de la machine RAM.
 
     Args:
-    machine (dict): The dictionary representing the RAM machine.
+    machine (dict): le dictionnaire représentant la machine RAM.
 
-    Returns:
-    str: Execution status message.
+    Retourne:
+    str: message de statut d'exécution.
     """
-
+    # prend la ligne en cours d'exécution
     line_nb = machine['s']
+
+    # prend la commande de la ligne en cours d'exécution
     cmd_line = machine['l'][line_nb]
 
+    # affiche les éléments de la machine RAM en cours d'exécution
     print("RAM execution status:\n")
     for key, value in machine['l'].items():
         if key == machine["s"]:
@@ -74,16 +83,18 @@ def execution(machine: dict):
         else:
             print(f"{value}")
     print("\n")
-    val_pos = ['i', 'r', 'o']
-    idx_at = []
-    idx_vir = []
-    idx_par = []
+
+    val_pos = ['i', 'r', 'o']  # liste des lettres possibles pour les registres
+    idx_vir = []  # liste pour les virgules
+    idx_par = []  # liste pour les parenthèses
     cmd = ''
+    # prend les 3 premiers éléments de la ligne de commande
     for idx in range(3):
         cmd += cmd_line[idx]
 
     #                                        GESTION DE ADD (addition)
 
+    #
     if cmd == 'ADD':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -92,7 +103,9 @@ def execution(machine: dict):
                 idx_vir.append(i)
 
         # op 1 à 3 sont les arguments de la ligne de commande,
-        # le code les récupère en faisant du slicing
+        # on les récupère en faisant du slicing
+
+        # op 2 est ce qui est entre ',' et ','
         op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
 
         # op1 est ce qui est entre'(' et ',' op2 est ce qui est entre',' et ','
@@ -119,10 +132,11 @@ def execution(machine: dict):
             op_1 = int(op_1)
 
         # verifie si l'element à l'index 0 de op1
-        # est l'une des lettres de ['i', 'r', 'o']
+        # est l'une des lettres['i', 'r', 'o']
         elif op_1[0] in val_pos:
             op_1 = machine[op_1[0]][int(op_1[1])]
 
+        # on fait la même chose pour op2
         if '@' in op_2:
             reg = op_2[:1]
             loc = op_2[2:]
@@ -135,6 +149,7 @@ def execution(machine: dict):
         elif op_2[0] in val_pos:
             op_2 = machine[op_2[0]][int(op_2[1:])]
 
+        # on fait la même chose pour op3
         if '@' in op_3:
             reg = op_3[:1]
             loc = op_3[2:]
@@ -145,6 +160,9 @@ def execution(machine: dict):
             machine['s'] += 1
 
     #                                       GESTION DE SUB(soustraction)
+
+    # on fait la même chose que ADD pour la commande SUB
+    # seule l'opération change ici - avant +
     elif cmd == 'SUB':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -191,6 +209,7 @@ def execution(machine: dict):
 
     #                                         GESTION DE MLT (multiply)
 
+    # même chose aussi, seule l'opération change ici * avant + et -
     elif cmd == 'MLT':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -236,6 +255,8 @@ def execution(machine: dict):
             machine['s'] += 1
 
     #                                         GESTION DE DIV (division)
+
+    # même chose encore, seule l'opération change ici / avant +, -, et *
     elif cmd == 'DIV':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -283,22 +304,25 @@ def execution(machine: dict):
 
     #                                         GESTION DE JMP (Jump at arg)
 
+    #  on deplace le pointeur de la machine avec la valeur de l'opérande
     elif cmd == 'JMP':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
                 idx_par.append(i)
-        op = cmd_line[idx_par[0]+1:idx_par[1]]
-        if '-' in op:
+        op = cmd_line[idx_par[0]+1:idx_par[1]]  # on prend l'opérande
+        if '-' in op:  # si l'opérande est négatif
+            # on ajoute la valeur de l'argument à la valeur de s
             machine['s'] += int(op)
             print(f"Status of the machine: \n\n{machine}\n\n")
             return execution(machine)
-        else:
+        else:  # même chose si l'opérande est positif
             machine['s'] += int(op)
             print(f"Status of the machine: \n\n{machine}\n\n")
             return execution(machine)
 
-    #                    GESTION DE JEQ (sauter à op_3 si op_1 est égal à op_2)
+    #                   GESTION DE JEQ (sauter d' op_3 si op_1 est égal à op_2)
 
+    # même principe que JMP, mais on saute de la valeur donnée si op1 == op2
     elif cmd == 'JEQ':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -352,6 +376,8 @@ def execution(machine: dict):
             return execution(machine)
 
     #   GESTION DE JLA (sauter à op_3 si op_1 est strictement supérieur à op_2)
+
+    # même principe que JEQ, mais on saute de la valeur donnée si op1 > op2
     elif cmd == 'JLA':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -403,6 +429,8 @@ def execution(machine: dict):
             return execution(machine)
 
     #  GESTION DE JLE (sauter à op_3 si op_1 est strictement inférieur à op_2)
+
+    # même principe que JEQ, mais on saute de la valeur donnée si op1 < op2
     elif cmd == 'JLE':
         for i in range(len(cmd_line)):
             if cmd_line[i] == '(' or cmd_line[i] == ')':
@@ -456,6 +484,7 @@ def execution(machine: dict):
 
     #                             GEESTION DE BRK(break)
 
+    # on arrête l'exécution du programme si on rencontre BRK
     elif cmd == 'BRK':
         machine['o'][0] = len(machine['o']) - 1
         print(f"Status of the machine: \n\n{machine}\n\n")
@@ -464,6 +493,7 @@ def execution(machine: dict):
 
     #                              GESTION DES ERREURS
 
+    # si la commande n'est pas reconnue, on lève une exception
     else:
         raise (NameError(f"{cmd} not recognized, commands supported:\n"
                          f"ADD\n"
@@ -505,7 +535,8 @@ def parse_arguments():
 def main():
 
     """
-    Main function to execute the RAM machine code.
+    Fonction principale pour exécuter le code de la machine RAM.
+
     """
     file_name, word = parse_arguments()
     program = read_RAM(file_name, word)
