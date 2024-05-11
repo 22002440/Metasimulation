@@ -44,6 +44,11 @@ def read_RAM(file_name: any, word: Union[list, int]) -> dict:
 
     return program
 
+def tree_construction(program:dict)-> list:
+    nil_list = [0 for i in range(len(program['l']))]
+    tree =[nil_list for i in range(len(program['l']))]
+    
+
 # question 2 / 3 / 4
 def execution(machine: dict):
 
