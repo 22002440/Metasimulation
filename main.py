@@ -56,8 +56,456 @@ def read_RAM(file_name: any, word: Union[list, int]) -> dict:
 
     return program
 
+# question 2
+def next_step(machine:dict):
 
-# question 2 / 3 / 4
+    """
+    Executes the commands of the RAM machine.
+
+    Args:
+    machine (dict): The dictionary representing the RAM machine.
+
+    Returns:
+    str: Execution status message.
+    """
+    # prend la ligne en cours d'exécution
+    line_nb = machine ['s']
+
+    # prend la commande de la ligne en cours d'exécution
+    cmd_line = machine['l'][line_nb]
+
+    # affiche la configuration avant de calculer la prochaine étape
+    print(f"\nstatus of the machine before calculating next step:\n\n{machine}\n\n")
+    
+    # affiche les éléments de la machine RAM en cours d'exécution
+    print("RAM execution status:\n")
+    for key, value in machine['l'].items():
+        if key == machine["s"]:
+            print(f"{value} <-- program is executing this step at the moment")
+        else:
+            print(f"{value}")
+    print("\n")
+
+    val_pos = ['i', 'r', 'o'] # liste des lettres possibles pour les registres   
+    idx_vir = [] # liste pour les virgules
+    idx_par = [] # liste pour les parenthèses
+    cmd = ''
+
+    # prend les 3 premiers éléments de la ligne de commande
+    for idx in range(3):
+        cmd += cmd_line[idx]
+
+    #                                        GESTION DE ADD (addition)
+
+    #
+    if cmd == 'ADD':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+
+
+        # op 1 à 3 sont les arguments de la ligne de commande,
+        # on les récupère en faisant du slicing
+
+        # op1 est ce qui est entre'(' et ',' op2 est ce qui est entre',' et ','
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]] 
+
+        # op 2 est ce qui est entre ',' et ','
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
+
+        # op 3 est ce qui est entre ',' et ')' 
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]] 
+
+        # on parse chaque argument en vérifiant si il y a un '@'
+        # si oui on prend ce qui est avant comme registre cible
+        # et ce qui suit comme clé de l'index
+        if '@' in op_1: # parsing of each args checking if there is a @ if so we take what's befor as the target register and what's after for the index key
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        
+        # verifie si '-' est bien dans op_3  si c'est le cas on change le type
+        # par exemple isdigit sur -4 retourne faux
+        elif '-' in op_1:
+            op_1 = int(op_1)
+        elif op_1.isdigit():
+            op_1 = int(op_1)
+
+        # verifie si l'element à l'index 0 de op1
+        # est l'une des lettres['i', 'r', 'o'] 
+        elif op_1[0] in val_pos: 
+            op_1 = machine[op_1[0]][int(op_1[1])]
+
+        # on fait la même chose pour op2
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif '-' in op_2:
+            op_2 = int(op_2)
+        elif op_2.isdigit():
+            op_2 = int(op_2) 
+        elif op_2[0] in val_pos:
+            op_2 = machine[op_2[0]][int(op_2[1:])]
+
+        # on fait la même chose pour op3
+        if '@' in op_3:
+            reg = op_3[:1]
+            loc = op_3[2:]
+            machine[reg][int(machine[loc[0]][int(loc[1])])] = op_1 + op_2
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+        elif op_3[0] in val_pos:
+            machine[op_3[0]][int(op_3[1:])] = op_1 + op_2
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+
+    #                                       GESTION DE SUB(soustraction)
+
+    # on fait la même chose que ADD pour la commande SUB
+    # seule l'opération change ici - avant +
+    elif cmd == 'SUB':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+        
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]] 
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]]
+
+        if '@' in op_1:
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        elif '-' in op_1:
+            op_1 = int(op_1)
+        elif op_1.isdigit():
+            op_1 = int(op_1) 
+        elif op_1[0] in val_pos:
+            op_1 = machine[op_1[0]][int(op_1[1])]
+            
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif '-' in op_2:
+            op_2 = int(op_2)
+        elif op_2.isdigit():
+            op_2 = int(op_2) 
+        elif op_2[0] in val_pos:
+            op_2 = machine[op_2[0]][int(op_2[1:])]
+ 
+        if '@' in op_3:
+            reg = op_3[:1]
+            loc = op_3[2:]
+            machine[reg][int(machine[loc[0]][int(loc[1])])] = op_1 - op_2
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+        elif op_3[0] in val_pos:
+            machine[op_3[0]][int(op_3[1])] = op_1 - op_2
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+
+    #                                         GESTION DE MLT (multiply)
+
+    # même chose aussi, seule l'opération change ici * avant + et -
+    elif cmd == 'MLT':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]] 
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]]
+
+        if '@' in op_1:
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        elif '-' in op_1:
+            op_1 = int(op_1)
+        elif op_1.isdigit():
+            op_1 = int(op_1) 
+        elif op_1[0] in val_pos:
+            op_1 = machine[op_1[0]][int(op_1[1])]
+            
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif '-' in op_2:
+            op_2 = int(op_2)
+        elif op_2.isdigit():
+            op_2 = int(op_2) 
+        elif op_2[0] in val_pos:
+            op_2 = machine[op_2[0]][int(op_2[1:])]
+ 
+        if '@' in op_3:
+            reg = op_3[:1]
+            loc = op_3[2:]
+            machine[reg][int(machine[loc[0]][int(loc[1])])] = op_1 * op_2
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+        elif op_3[0] in val_pos:
+            machine[op_3[0]][int(op_3[1])] = op_1 * op_2
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+
+    #                                         GESTION DE DIV (division)
+
+    # même chose encore, seule l'opération change ici / avant +, -, et *
+    elif cmd == 'DIV':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]]
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]]
+
+        if '@' in op_1:
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        elif '-' in op_1:
+            op_1 = int(op_1)
+        elif op_1.isdigit():
+            op_1 = int(op_1) 
+        elif op_1[0] in val_pos:
+            op_1 = machine[op_1[0]][int(op_1[1])]
+            
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif '-' in op_2:
+            op_2 = int(op_2)
+        elif op_2.isdigit():
+            op_2 = int(op_2) 
+        elif op_2[0] in val_pos:
+            op_2 = machine[op_2[0]][int(op_2[1:])]
+ 
+        if '@' in op_3:
+            reg = op_3[:1]
+            loc = op_3[2:]
+            machine[reg][int(machine[loc[0]][int(loc[1])])] = round(op_1 / op_2, 2)
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+        elif op_3[0] in val_pos:
+            machine[op_3[0]][int(op_3[1])] = round(op_1 / op_2, 2)
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+
+    #                                         GESTION DE JMP (Jump à l'arg)
+
+    #  on deplace le pointeur de la machine avec la valeur de l'opérande
+    elif cmd == 'JMP':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+        op = cmd_line[idx_par[0]+1:idx_par[1]]
+        if '-' in op:
+            machine['s'] += int(op)
+            print(f"Status of the machine: \n\n{machine}\n\n")
+        else:
+            machine['s'] += int(op)
+            print(f"Status of the machine: \n\n{machine}\n\n")
+
+    #                   GESTION DE JEQ (sauter d' op_3 si op_1 est égal à op_2)
+
+    # même principe que JMP, mais on saute de la valeur donnée si op1 == op2
+    elif cmd == 'JEQ':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]] 
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]]
+
+        if '@' in op_1:
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        elif '-' in op_1:
+            op_1 = int(op_1)
+        elif op_1.isdigit():
+            op_1 = int(op_1) 
+        elif op_1[0] in val_pos:
+            op_1 = machine[op_1[0]][int(op_1[1])]
+            
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif '-' in op_2:
+            op_2 = int(op_2)
+        elif op_2.isdigit():
+            op_2 = int(op_2) 
+        elif op_2[0] in val_pos:
+            op_2 = machine[op_2[0]][int(op_2[1:])]
+
+        if op_1 == op_2:
+            for i in op_3:
+                if i == '-':
+                    min = op_3.index('-')
+                    val = int(op_3)
+                    machine['s'] = machine['s'] + val
+                    print(f"Status of the machine: \n\n{machine}\n\n")
+                elif '-' not in op_3:
+                    machine['s'] += int(op_3)
+                    print(f"Status of the machine: \n\n{machine}\n\n")
+        else:
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+
+
+    #   GESTION DE JLA (sauter à op_3 si op_1 est strictement supérieur à op_2)
+
+    # même principe que JEQ, mais on saute de la valeur donnée si op1 > op2
+    elif cmd == 'JLA':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]] 
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]]
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]]
+
+        if '@' in op_1:
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        elif '-' in op_1:
+            op_1 = int(op_1)
+        elif op_1.isdigit():
+            op_1 = int(op_1) 
+        elif op_1[0] in val_pos:
+            op_1 = machine[op_1[0]][int(op_1[1])]
+            
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif '-' in op_2:
+            op_2 = int(op_2)
+        elif op_2.isdigit():
+            op_2 = int(op_2) 
+        elif op_2[0] in val_pos:
+            op_2 = machine[op_2[0]][int(op_2[1:])]
+
+        if op_1 > op_2:
+            if '-' in op_3:
+                val = int(op_3)
+                machine['s'] += val
+                print(f"Status of the machine: \n\n{machine}\n\n")
+            elif i.isdigit():
+                machine['s'] += int(i)
+                print(f"Status of the machine: \n\n{machine}\n\n") 
+        else:
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n") 
+
+    #  GESTION DE JLE (sauter à op_3 si op_1 est strictement inférieur à op_2)
+
+    # même principe que JEQ, mais on saute de la valeur donnée si op1 < op2
+
+    elif cmd == 'JLE':
+        for i in range(len(cmd_line)):
+            if cmd_line[i] == '(' or cmd_line[i] == ')':
+                idx_par.append(i)
+            elif cmd_line[i] == ',':
+                idx_vir.append(i)
+
+        op_1 = cmd_line[idx_par[0]+1:idx_vir[0]]
+        op_2 = cmd_line[idx_vir[0]+1:idx_vir[1]] 
+        op_3 = cmd_line[idx_vir[1]+1:idx_par[1]]
+
+        if '@' in op_1:
+            reg = op_1[:1]
+            loc = op_1[2:]
+            val = machine[loc[0]][int(loc[1])]
+            op_1 = machine[reg][val]
+        elif len(op_1) == 2:
+            op_1 = machine[op_1[0]][int(op_1[1])]
+        elif op_1.isdigit():
+            op_1 = int(op_1) 
+            
+        if '@' in op_2:
+            reg = op_2[:1]
+            loc = op_2[2:]
+            print(loc[0], loc[1])
+            val = machine[loc[0]][int(loc[1])]
+            op_2 = machine[reg][val]
+        elif len(op_2) == 2 and op_2.isdigit():
+            op_2 = int(op_2)
+        elif len(op_2) == 2 and op_2[0].isdigit() != True:
+            op_2 = machine[op_2[0]][int(op_2[1])]
+        elif len(op_2) == 1:
+            op_2 = int(op_2)
+
+        if op_1 < op_2:
+            for i in op_3:
+                if i == '-':
+                    min = op_3.index('-')
+                    val = int(op_3[min] + op_3[min+1])
+                    machine['s'] = machine['s'] + val
+                    print(f"Status of the machine: \n\n{machine}\n\n")
+                elif i.isdigit():
+                    machine['s'] += int(i)
+                    print(f"Status of the machine: \n\n{machine}\n\n") 
+        else:
+            machine['s'] += 1
+            print(f"Status of the machine: \n\n{machine}\n\n")
+    
+    #                             GESTION DE BRK(break)
+
+    # on arrête l'exécution du programme si on rencontre BRK
+    elif cmd == 'BRK':
+        machine['o'][0] = len(machine['o']) -1
+        print(f"Status of the machine: \n\n{machine}\n\n")
+        return 'Congrats your code was executed with success !! feel free to notify all your friends', machine
+    
+    #                              GESTION DES ERREURS
+
+    # si la commande n'est pas reconnue, on lève une exception
+    else:
+        raise (NameError(f"{cmd} not recognized, commands supported:\n"
+                         f"ADD\n"
+                         f"SUB\n"
+                         f"MLT\n"
+                         f"DIV\n"
+                         f"JMP\n"
+                         f"JEQ\n"
+                         f"JLA\n"
+                         f"JLE\n"
+                         f"BRK\n"))
+
+# question 3 / 4
 def execution(machine: dict):
 
     """
@@ -482,7 +930,7 @@ def execution(machine: dict):
             print(f"Status of the machine: \n\n{machine}\n\n")
             return execution(machine)
 
-    #                             GEESTION DE BRK(break)
+    #                             GESTION DE BRK(break)
 
     # on arrête l'exécution du programme si on rencontre BRK
     elif cmd == 'BRK':
