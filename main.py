@@ -23,7 +23,7 @@ def read_RAM(file_name: any, word: Union[list, int]) -> dict:
         lenth_read = len(lines)
         for idx in range(lenth_read):
             elements = lines[idx].strip().split()
-            operation = elements[0][:-2] #récupère la ligne sans le caractère de retour à la ligne "\n"
+            operation = elements[0][:-2] # operation gets the line without '\n'
             lin.update({idx: operation})
 
     for idx in range(1, lenth_word + 1):
