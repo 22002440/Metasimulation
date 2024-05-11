@@ -32,8 +32,8 @@ Le fichier de la machine RAM doit contenir le code de la machine, où chaque lig
 - `DIV`: Division
 - `JMP`: Sauter à l'adresse spécifiée
 - `JEQ`: Sauter si égal à
-- `JLA`: Sauter si supérieur à
-- `JLE`: Sauter si inférieur à
+- `JLA`: Sauter si strictement supérieur à
+- `JLE`: Sauter si strictement inférieur à
 - `BRK`: Arrêter l'exécution
 
 ## Contributeurs
