@@ -19,6 +19,8 @@ Concercant la question 5, ce sont les fichiers .txt joints qui y répondent et p
     ```
 
     Remplacez `la_machine_ram.txt` par le nom de votre fichier contenant le code de la machine RAM et `input` par les entrées que vous souhaitez fournir à la machine.
+    Pour la question 5 les fichiers sont : a_power_b.txt et bubble_sort.txt.
+    Utilisez l'entrée que vous voulez, pour le premier donnez d'abord a 'espace' b, pour le second donnez chaque nombre du tableau un par un, ils sont tous séparés d'un espace.
 
     
 
@@ -37,5 +39,5 @@ Le fichier de la machine RAM doit contenir le code de la machine, où chaque lig
 - `BRK`: Arrêter l'exécution
 
 ## Contributeurs
-Malak LALAMI 22000318
+Malak LALAMI 22000319
 Naoufal AMALLAH 22002440
