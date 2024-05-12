@@ -996,7 +996,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Execute a RAM machine code.')
     parser.add_argument('file_name', type=str, help='Name of the RAM machine code file')
     parser.add_argument('word', type=int, nargs='+', help='Word of input data for the RAM machine')
-    parser.add_argument('mode', type=str, help='Mode of execution supported modes: opti or default or matrix')
+    parser.add_argument('mode', type=str, help='Mode of execution supported modes: opti or default or matrix or step')
     args = parser.parse_args()
     return args.file_name, args.word, args.mode
 
@@ -1034,7 +1034,7 @@ def main():
         
         message = next_step(config_3)
     else:
-        raise(ValueError("Mode entered is not supported expected --> opti or default or test"))
+        raise(ValueError("Mode entered is not supported expected --> opti or default or test or step"))
     print(message)
 
 if __name__ == "__main__":
