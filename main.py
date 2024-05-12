@@ -47,17 +47,18 @@ def read_RAM(file_name: any, word: Union[list, int]) -> dict:
 
 
 # question 2
-def execution(machine: dict):
+def next_step(machine: dict):
     line_nb = machine ['s']
     cmd_line = machine['l'][line_nb]
     
-    print("RAM execution status:\n")
+    print("\nRAM execution status before next step:\n")
     for key, value in machine['l'].items():
         if key == machine["s"]:
             print(f"{value} <-- program is executing this step at the moment")
         else:
             print(f"{value}")
     print("\n")
+    print(f"Status of the machine before next step: \n\n{machine}\n\n")
     val_pos = ['i', 'r', 'o']
     idx_at = []
     idx_vir = []
@@ -249,10 +250,24 @@ def execution(machine: dict):
         op = cmd_line[idx_par[0]+1:idx_par[1]]
         if '-' in op:
             machine['s'] += int(op)
-            print(f"Status of the machine: \n\n{machine}\n\n")
+            print("\nRAM execution status after next step:\n")
+            for key, value in machine['l'].items():
+                if key == machine["s"]:
+                    print(f"{value} <-- program is executing this step at the moment")
+                else:
+                    print(f"{value}")
+            print("\n")
+            print(f"Status of the machine after next step: \n\n{machine}\n\n")
         else:
             machine['s'] += int(op)
-            print(f"Status of the machine: \n\n{machine}\n\n")
+            print("\nRAM execution status after next step:\n")
+            for key, value in machine['l'].items():
+                if key == machine["s"]:
+                    print(f"{value} <-- program is executing this step at the moment")
+                else:
+                    print(f"{value}")
+            print("\n")
+            print(f"Status of the machine after next step: \n\n{machine}\n\n")
         
     elif cmd == 'JEQ':
         for i in range(len(cmd_line)):
@@ -295,13 +310,36 @@ def execution(machine: dict):
                     min = op_3.index('-')
                     val = int(op_3)
                     machine['s'] = machine['s'] + val
-                    print(f"Status of the machine: \n\n{machine}\n\n")
+                    
+                    print("\nRAM execution status after next step:\n")
+                    for key, value in machine['l'].items():
+                        if key == machine["s"]:
+                            print(f"{value} <-- program is executing this step at the moment")
+                        else:
+                            print(f"{value}")
+                    print("\n")
+                    print(f"Status of the machine after next step: \n\n{machine}\n\n")
+
                 elif '-' not in op_3:
                     machine['s'] += int(op_3)
-                    print(f"Status of the machine: \n\n{machine}\n\n") 
+                    print("\nRAM execution status after next step:\n")
+                    for key, value in machine['l'].items():
+                        if key == machine["s"]:
+                            print(f"{value} <-- program is executing this step at the moment")
+                        else:
+                            print(f"{value}")
+                    print("\n")
+                    print(f"Status of the machine after next step: \n\n{machine}\n\n") 
         else:
             machine['s'] += 1
-            print(f"Status of the machine: \n\n{machine}\n\n")
+            print("\nRAM execution status after next step:\n")
+            for key, value in machine['l'].items():
+                if key == machine["s"]:
+                    print(f"{value} <-- program is executing this step at the moment")
+                else:
+                    print(f"{value}")
+            print("\n")
+            print(f"Status of the machine after next step: \n\n{machine}\n\n")
         
     elif cmd == 'JLA':
         for i in range(len(cmd_line)):
@@ -342,13 +380,35 @@ def execution(machine: dict):
                     min = op_3.index('-')
                     val = int(op_3[min] + op_3[min+1])
                     machine['s'] += val
-                    print(f"Status of the machine: \n\n{machine}\n\n")
+                    print("\nRAM execution status after next step:\n")
+                    for key, value in machine['l'].items():
+                        if key == machine["s"]:
+                            print(f"{value} <-- program is executing this step at the moment")
+                        else:
+                            print(f"{value}")
+                    print("\n")
+                    print(f"Status of the machine after next step: \n\n{machine}\n\n")
+
                 elif i.isdigit():
                     machine['s'] += int(i)
-                    print(f"Status of the machine: \n\n{machine}\n\n") 
+                    print("\nRAM execution status after next step:\n")
+                    for key, value in machine['l'].items():
+                        if key == machine["s"]:
+                            print(f"{value} <-- program is executing this step at the moment")
+                        else:
+                            print(f"{value}")
+                    print("\n")
+                    print(f"Status of the machine after next step: \n\n{machine}\n\n") 
         else:
             machine['s'] += 1
-            print(f"Status of the machine: \n\n{machine}\n\n") 
+            print("\nRAM execution status after next step:\n")
+            for key, value in machine['l'].items():
+                if key == machine["s"]:
+                    print(f"{value} <-- program is executing this step at the moment")
+                else:
+                    print(f"{value}")
+            print("\n")
+            print(f"Status of the machine after next step: \n\n{machine}\n\n") 
         
     elif cmd == 'JLE':
         for i in range(len(cmd_line)):
@@ -390,20 +450,49 @@ def execution(machine: dict):
                     min = op_3.index('-')
                     val = int(op_3[min] + op_3[min+1])
                     machine['s'] = machine['s'] + val
-                    print(f"Status of the machine: \n\n{machine}\n\n")
+                    print("\nRAM execution status after next step:\n")
+                    for key, value in machine['l'].items():
+                        if key == machine["s"]:
+                            print(f"{value} <-- program is executing this step at the moment")
+                        else:
+                            print(f"{value}")
+                    print("\n")
+                    print(f"Status of the machine after next step: \n\n{machine}\n\n")
+
                 elif i.isdigit():
                     machine['s'] += int(i)
-                    print(f"Status of the machine: \n\n{machine}\n\n")  
+                    print("\nRAM execution status after next step:\n")
+                    for key, value in machine['l'].items():
+                        if key == machine["s"]:
+                            print(f"{value} <-- program is executing this step at the moment")
+                        else:
+                            print(f"{value}")
+                    print("\n")
+                    print(f"Status of the machine after next step: \n\n{machine}\n\n")  
         else:
             machine['s'] += 1
-            print(f"Status of the machine: \n\n{machine}\n\n")
+            print("\nRAM execution status after next step:\n")
+            for key, value in machine['l'].items():
+                if key == machine["s"]:
+                    print(f"{value} <-- program is executing this step at the moment")
+                else:
+                    print(f"{value}")
+            print("\n")
+            print(f"Status of the machine after next step: \n\n{machine}\n\n")
     elif cmd == 'BRK':
         machine['o'][0] = len(machine['o']) -1
-        print(f"Status of the machine: \n\n{machine}\n\n")
+        print(f"Status of the machine after next step: \n\n{machine}\n\n")
         return 'Congrats your code was executed with success !! feel free to notify all your friends', machine
     else:
         raise(NameError(f"{cmd} not recognized, commands supported:\nADD\nSUB\nMLT\nDIV\nJMP\nJEQ\nJLA\nJLE\nBRK\n"))
-    print(f"Status of the machine: \n\n{machine}\n\n")
+    print("\nRAM execution status after next step:\n")
+    for key, value in machine['l'].items():
+        if key == machine["s"]:
+            print(f"{value} <-- program is executing this step at the moment")
+        else:
+            print(f"{value}")
+    print("\n")
+    print(f"Status of the machine after next step: \n\n{machine}\n\n")
     return machine
 
 
@@ -826,7 +915,7 @@ def graph_oriente(machine:dict):
 
         for edge in graph['e'].values():
             graph['m'][edge[0]][edge[1]] = 1
-    return f"\nles sommets du graph sont :\n\n{graph['n']},\n\nles arrêtes sont:\n\n{graph['e']}\n\net la matrice d'adjacence:\n\n{graph['m']}", graph
+    return graph
 
 #question 9
 def dfs(graph, start, visited):
@@ -877,7 +966,10 @@ def opti_ram(target_file:str, unreachable: list, machine:dict):
     operation = {}
     operation_opti = {}
     size = len(operation)
-
+    
+    if unreachable == []:
+        return "everything is fine lol"
+     
     with open(target_file, 'r') as file:
             lines = file.readlines()
             lenth_read = len(lines)
@@ -892,7 +984,10 @@ def opti_ram(target_file:str, unreachable: list, machine:dict):
     with open(f'{target_file[:-4] + '_opti.txt'}', 'w') as file :
         for _, instruction in operation_opti.items():
             line = instruction
-            file.write(f"{line}\n")
+            if line == 'BRK':
+                file.write(f"{line}")
+            else:
+                file.write(f"{line}\n")
 
             
 # automatisation du code par commande dans le terminal
@@ -901,7 +996,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Execute a RAM machine code.')
     parser.add_argument('file_name', type=str, help='Name of the RAM machine code file')
     parser.add_argument('word', type=int, nargs='+', help='Word of input data for the RAM machine')
-    parser.add_argument('mode', type=str, help='Mode of execution supported modes: opti or default')
+    parser.add_argument('mode', type=str, help='Mode of execution supported modes: opti or default or matrix')
     args = parser.parse_args()
     return args.file_name, args.word, args.mode
 
@@ -909,12 +1004,35 @@ def main():
     file_name, word, mode = parse_arguments()
     program = read_RAM(file_name, word)
     if mode == 'opti':
-        _,tree = graph_oriente(program)
+        tree = graph_oriente(program)
         unreachable = traverse_and_mark_unreachable(tree)
         message = opti_ram(file_name,unreachable,program)
     elif mode == 'default':
         message = execution(program)
-
+    elif mode == 'matrix':
+        tree = graph_oriente(program)
+        message = tree['m']
+    elif mode == 'step':
+        config_1 = {'l': {0: 'ADD(i0,0,r0)', 1: 'ADD(i@r0,0,r1)', 2: 'SUB(r0,1,r0)', 3: 'ADD(i@r0,r1,r1)'
+                          , 4: 'SUB(r0,1,r0)', 5: 'JEQ(r0,0,2)', 6: 'JMP(-3)', 7: 'ADD(i0,0,r0)'
+                          , 8: 'DIV(r1,i0,r1)', 9: 'ADD(r1,0,o1)', 10: 'BRK'}
+                          , 'i': {0: 5, 1: 2, 2: 5, 3: 56, 4: 42, 5: 166}
+                          , 'r': {0: 5, 1: 271}, 'o': {0: 0}, 's': 8}
+        
+        config_2 = {'l': {0: 'ADD(i0,0,r0)', 1: 'ADD(i@r0,0,r1)', 2: 'SUB(r0,1,r0)'
+                          , 3: 'ADD(i@r0,r1,r1)'
+                          , 4: 'SUB(r0,1,r0)', 5: 'JEQ(r0,0,2)', 6: 'JMP(-3)', 7: 'ADD(i0,0,r0)'
+                          , 8: 'DIV(r1,i0,r1)', 9: 'ADD(r1,0,o1)', 10: 'BRK'}
+                          , 'i': {0: 5, 1: 2, 2: 5, 3: 56, 4: 42, 5: 166}, 'r': {0: 1, 1: 269}
+                          , 'o': {0: 0}, 's': 3}
+        
+        config_3 = {'l': {0: 'ADD(i0,0,r0)', 1: 'ADD(i@r0,0,r1)', 2: 'SUB(r0,1,r0)'
+                          , 3: 'ADD(i@r0,r1,r1)', 4: 'SUB(r0,1,r0)', 5: 'JEQ(r0,0,2)'
+                          , 6: 'JMP(-3)', 7: 'ADD(i0,0,r0)', 8: 'DIV(r1,i0,r1)', 9: 'ADD(r1,0,o1)'
+                          , 10: 'BRK'}, 'i': {0: 5, 1: 2, 2: 5, 3: 56, 4: 42, 5: 166}
+                          , 'r': {0: 5, 1: 54.2}, 'o': {0: 0}, 's': 9}
+        
+        message = next_step(config_3)
     else:
         raise(ValueError("Mode entered is not supported expected --> opti or default or test"))
     print(message)
